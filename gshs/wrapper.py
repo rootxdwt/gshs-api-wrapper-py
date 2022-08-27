@@ -34,7 +34,7 @@ class Wrapper:
         except:
             raise RequestParseException("Invalid Query Or Token")
 
-    async def searchByPhone(self, query: str) -> Teacher or dict:
+    async def searchByPhone(self, query: str) -> Teacher or Student:
 
         reFinder = Finder()
         req = await self.httpClient.post(
