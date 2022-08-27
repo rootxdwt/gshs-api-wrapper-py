@@ -9,26 +9,32 @@ import httpx
 baseURL = "https://student.gs.hs.kr/student"
 
 
-class wrapper:
+class Wrapper:
     def __init__(self, token: str) -> None:
         self.token = token
         self.httpClient = httpx.AsyncClient(cookies={'JSESSIONID': self.token})
 
-    async def searchFromStudent(self, query: str) -> Student:
+    async def searchFromStudent(self, query: str, searchby="name" ) -> Student:
+        if searchby not in ['name', 'id']:
+            raise RequestParseException("invalid searchby Value")
         req = await self.httpClient.post(
-            f'{baseURL}/searchStudent.do?target=&isGrade=&callback=&terms={"studentId" if query.isnumeric() else "name"}&search={query}&grade=&ban=&pageOnCnt=10')
+            f'{baseURL}/searchStudent.do?target=&isGrade=&callback=&terms={"name" if searchby=="name" else "studentId"}&search={query}&grade=&ban=&pageOnCnt=300')
         rawHTMLctx = req.text
         bs4Finder = BeautifulSoup(rawHTMLctx, 'html.parser')
 
+        rtn=[]
         try:
-            id = bs4Finder.find('td', {'class': "item3"}).text
-            name = bs4Finder.find('td', {'class': "item4"}).text
-            phone = bs4Finder.find('td', {'class': "item5"}).text
-            return Student(id, name, phone)
+            id = bs4Finder.findAll('td', {'class': "item3"})
+            name = bs4Finder.findAll('td', {'class': "item4"})
+            phone = bs4Finder.findAll('td', {'class': "item5"})
+
+            for i in range(len(id)):
+                rtn.append(Student(id[i].text, name[i].text, phone[i].text.replace("-","",-1)))
+            return rtn
         except:
             raise RequestParseException("Invalid Query Or Token")
 
-    async def searchFromPhone(self, query: str) -> Teacher or dict:
+    async def searchByPhone(self, query: str) -> Teacher or dict:
 
         reFinder = Finder()
         req = await self.httpClient.post(
