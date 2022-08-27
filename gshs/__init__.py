@@ -1,5 +1,5 @@
 """
-makes 송죽학사 RESTful
+api wrapper for 송죽학사
 """
 
 from .wrapper import *
