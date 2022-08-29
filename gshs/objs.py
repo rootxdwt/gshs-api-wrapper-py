@@ -1,4 +1,3 @@
-import requests
 from bs4 import BeautifulSoup
 
 baseURL = "https://student.gs.hs.kr/student"
