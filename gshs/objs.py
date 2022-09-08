@@ -14,11 +14,13 @@ class User:
 
 
 class Student(User):
-    def __init__(self, id, name, phone):
+    def __init__(self, id, name, phone, year, _class):
         super().__init__(id, name, phone)
+        self.year = year
+        self._class = _class
 
     def __repr__(self):
-        return f'Student({self.id}, {self.name}, {self.phone})'
+        return f'Student({self.id}, {self.name}, {self.phone}, class: {self.year}-{self._class})'
 
 
 class Teacher(User):
